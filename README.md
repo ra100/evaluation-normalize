@@ -1,6 +1,13 @@
 # Evaluation Scales Normalizer
 
-There was an idea: Is it possible to evaluate (employees) using relative scale? Always to put people on scale 0 - 1 (0 - 100%, min-max)? And how to make this work, to have something meaningful from this?
+There was an idea: Is it possible to evaluate (employees) using relative scale?
+Always to put people on scale 0 - 1 (0 - 100%, min-max)?
+And how to make this work, to have something meaningful from this?
+
+Example result:
+
+![Heatmap](heatmap.png)
+
 
 This is POC, and I'm still not sure if this proves that it can work.
 
