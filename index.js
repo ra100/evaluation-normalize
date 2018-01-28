@@ -1,4 +1,8 @@
-const { userEvaluations, averageEvaluations } = require('./Evaluation')
+const {
+  userEvaluations,
+  averageEvaluations,
+  createHeatmap
+} = require('./Evaluation')
 
 const sourceData = [
   { A: 1, B: 0.8, C: 0.34, D: 0.33, E: 0 },
@@ -11,8 +15,8 @@ const userev = userEvaluations(sourceData)
 const average = averageEvaluations(sourceData).map(
   ({ name, average }) => `${name}: ${average}`
 )
+const heatmap = createHeatmap(userev, 5)
 
-// user averages
 console.log('Evaluations:\n', average.join('\n'))
-// values for heatmap
 console.log('Merged evaluations:\n', userev)
+console.log('Heatmap:\n', heatmap)

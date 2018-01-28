@@ -1,4 +1,5 @@
 const DEFAULT_MODIFIER = { multiplier: 1, offset: 0, error: Number.MAX_VALUE }
+const PRECISION = 10000
 
 const getUsers = data =>
   Object.keys(data.reduce((a, c) => ({ ...a, ...c }), {}))
@@ -26,6 +27,18 @@ const getIntersection = (scaleA = {}, scaleB = {}) =>
     }, {})
 
 const getMultiplier = (offset, etalon, value) => etalon / (value + offset)
+
+const getRange = userEvals => {
+  let min = Number.MAX_VALUE
+  let max = Number.MIN_VALUE
+  Object.values(userEvals).forEach(val =>
+    val.forEach(a => {
+      min = Math.min(a, min)
+      max = Math.max(a, max)
+    })
+  )
+  return { min, max }
+}
 
 const getOptimalModifier = (etalon, index, sourceData) =>
   Object.values(sourceData).map((data, i) => {
@@ -111,6 +124,34 @@ const averageEvaluations = sourceData => {
     .sort(({ average: a }, { average: b }) => b - a)
 }
 
+const round = number => Math.floor(number * PRECISION) / PRECISION
+
+const createHeatmap = (userEvals, buckets = 5) => {
+  const range = getRange(userEvals)
+  const intervalLength = (range.max - range.min) / buckets
+  const ranges = Array(buckets)
+    .fill()
+    .map((val, index) => ({
+      from: round(range.min + index * intervalLength),
+      to: round(range.min + (index + 1) * intervalLength)
+    }))
+  const evals = {}
+  console.log(ranges)
+  Object.entries(userEvals).forEach(([name, val]) => {
+    const heatmap = Array(buckets).fill(0)
+    val.forEach(x => {
+      console.log(x)
+      const index = ranges.findIndex(
+        ({ from, to }) => from <= round(x) === round(x) <= to
+      )
+      console.log(index)
+      heatmap[index] = heatmap[index] + 1
+    })
+    evals[name] = heatmap
+  })
+  return evals
+}
+
 const Evaluation = {
   getUsers,
   getAverage,
@@ -121,7 +162,8 @@ const Evaluation = {
   getOptimalModifier,
   nomalizeEvaluations,
   userEvaluations,
-  averageEvaluations
+  averageEvaluations,
+  createHeatmap
 }
 
 module.exports = Evaluation
