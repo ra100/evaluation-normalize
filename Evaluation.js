@@ -136,7 +136,6 @@ const createHeatmap = (userEvals, buckets = 5) => {
       to: round(range.min + (index + 1) * intervalLength)
     }))
   const evals = {}
-  console.log(ranges)
   Object.entries(userEvals).forEach(([name, val]) => {
     const heatmap = Array(buckets).fill(0)
     val.forEach(x => {
@@ -144,12 +143,16 @@ const createHeatmap = (userEvals, buckets = 5) => {
       const index = ranges.findIndex(
         ({ from, to }) => from <= round(x) === round(x) <= to
       )
-      console.log(index)
       heatmap[index] = heatmap[index] + 1
     })
     evals[name] = heatmap
   })
-  return evals
+  return Object.entries(evals).map(([name, data]) => ({
+    name,
+    data,
+    max: data.reduce((a, c) => Math.max(a, c), Number.MIN_VALUE),
+    min: data.reduce((a, c) => Math.min(a, c), Number.MAX_VALUE)
+  }))
 }
 
 const Evaluation = {

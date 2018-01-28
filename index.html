@@ -1,0 +1,76 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <div class="chart" id="chart">
+    </div>
+    <script>
+    const heatmap = [
+      { name: 'A', data: [ 0, 0, 0, 1, 2 ], max: 2, min: 0 },
+      { name: 'B', data: [ 0, 0, 0, 0, 4 ], max: 4, min: 0 },
+      { name: 'C', data: [ 0, 0, 1, 1, 1 ], max: 1, min: 0 },
+      { name: 'D', data: [ 0, 0, 2, 0, 0 ], max: 2, min: 0 },
+      { name: 'E', data: [ 0, 2, 0, 0, 0 ], max: 2, min: 0 },
+      { name: 'F', data: [ 1, 0, 1, 0, 0 ], max: 1, min: 0 },
+      { name: 'J', data: [ 1, 2, 0, 0, 0 ], max: 2, min: 0 },
+      { name: 'G', data: [ 0, 1, 0, 0, 0 ], max: 1, min: 0 },
+      { name: 'H', data: [ 0, 0, 1, 0, 0 ], max: 1, min: 0 },
+      { name: 'I', data: [ 0, 0, 0, 1, 0 ], max: 1, min: 0 }
+    ]
+    const chart = document.getElementById('chart')
+    heatmap.forEach(({name, data, max, min}) => {
+      const column = document.createElement('DIV')
+      column.classList.add('column')
+      const label = document.createElement('DIV')
+      label.classList.add('label', 'row')
+      label.innerHTML = name
+      column.appendChild(label)
+      data.forEach(h => {
+        const row = document.createElement('DIV')
+        row.classList.add('heat', 'row')
+        const style = `background-color: rgba(10, 190, 10, ${h / max});`
+        row.setAttribute('style', style)
+        row.innerHTML = `<span class="number">${h}</span>`
+        column.appendChild(row)
+      })
+      chart.appendChild(column)
+    })
+    </script>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .chart {
+        display: block;
+        float: left;
+        position: relative;
+      }
+
+      .column {
+        float: left;
+        display: flex;
+        flex-flow: column;
+        text-align: center;
+        width: 50px;
+      }
+
+      .label {
+        display: block;
+        width: 50px;
+        min-height: 50px;
+        flex: 1;
+      }
+
+      .row {
+        display: flex;
+        flex: 1;
+        width: 50px;
+        min-height: 50px;
+        justify-content: center;
+        align-content: center;
+        flex-flow: column;
+      }
+    </style>
+  </body>
+</html>
