@@ -56,6 +56,9 @@ const getOptimalModifier = (etalon, index, sourceData) =>
         .map(({ compare, etalon }) =>
           getMultiplier(val.offset, etalon, compare)
         )
+      if (multipliers.length === 0) {
+        multipliers.push(1)
+      }
       const min = Math.min(...multipliers)
       const max = Math.max(...multipliers)
       const avg = (min + max) / 2
@@ -82,8 +85,8 @@ const getOptimalModifier = (etalon, index, sourceData) =>
   })
 
 const nomalizeEvaluations = sourceData => {
-  const offsetSource = offsetAndMultiply(sourceData, 1, 1)
-  offsetSource.forEach((data, index) => {
+  const offsetSource = offsetAndMultiply(sourceData, 100, 1)
+  sourceData.forEach((data, index) => {
     getOptimalModifier(offsetSource[index], index, offsetSource).map(
       modifier => {
         if (modifier.skip) return
@@ -95,7 +98,7 @@ const nomalizeEvaluations = sourceData => {
       }
     )
   })
-  const normalizedEvaluations = offsetAndMultiply(offsetSource, -1, 1)
+  const normalizedEvaluations = offsetAndMultiply(offsetSource, -100, 1)
   // console.log(
   //   'Normalized Evaluations:\n',
   //   JSON.stringify(normalizedEvaluations)
