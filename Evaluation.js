@@ -1,6 +1,8 @@
 const DEFAULT_MODIFIER = { multiplier: 1, offset: 0, error: Number.MAX_VALUE }
 const PRECISION = 10000
 
+const round = number => Math.floor(number * PRECISION) / PRECISION
+
 const getUsers = data =>
   Object.keys(data.reduce((a, c) => ({ ...a, ...c }), {}))
 
@@ -25,27 +27,15 @@ const getIntersection = (scaleA = {}, scaleB = {}) =>
       etalon: value,
       compare: scaleB[key],
       name: key,
-      offset: value - scaleB[key]
+      offset: round(value - scaleB[key])
     }))
 
 const mapMultiplier = offset => ({ etalon, compare }) =>
-  etalon / (compare + offset)
-
-const getRange = userEvals => {
-  let min = Number.MAX_VALUE
-  let max = Number.MIN_VALUE
-  Object.values(userEvals).forEach(val =>
-    val.forEach(a => {
-      min = Math.min(a, min)
-      max = Math.max(a, max)
-    })
-  )
-  return { min, max }
-}
+  round(etalon / (compare + offset))
 
 const reduceModifier = (
   modifier,
-  { averageMultiplier: multiplier, multiplierError: error, offset }
+  { multiplier, error, offset }
 ) => {
   if (error > modifier.error) return modifier
   return { multiplier, offset, error }
@@ -58,15 +48,13 @@ const mapModifier = (val, i, intersection) => {
   if (multipliers.length === 0) {
     multipliers.push(1)
   }
-  const min = Math.min(...multipliers)
-  const max = Math.max(...multipliers)
-  const avg = (min + max) / 2
+  const avg = round(getAverage(multipliers))
   const difference = getAverage(multipliers.map(m => Math.abs(m - avg)))
   return {
     ...val,
     multipliers,
-    averageMultiplier: avg,
-    multiplierError: difference
+    multiplier: avg,
+    error: difference
   }
 }
 
@@ -123,7 +111,18 @@ const averageEvaluations = sourceData => {
     .sort(({ average: a }, { average: b }) => b - a)
 }
 
-const round = number => Math.floor(number * PRECISION) / PRECISION
+
+const getRange = userEvals => {
+  let min = Number.MAX_VALUE
+  let max = Number.MIN_VALUE
+  Object.values(userEvals).forEach(val =>
+    val.forEach(a => {
+      min = Math.min(a, min)
+      max = Math.max(a, max)
+    })
+  )
+  return { min, max }
+}
 
 const createHeatmap = (userEvals, buckets = 5) => {
   const range = getRange(userEvals)
@@ -155,6 +154,7 @@ const createHeatmap = (userEvals, buckets = 5) => {
 
 const Evaluation = {
   getUsers,
+  getRange,
   getAverage,
   modifySingle,
   offsetAndMultiply,
@@ -162,6 +162,8 @@ const Evaluation = {
   mapMultiplier,
   getOptimalModifier,
   nomalizeEvaluations,
+  reduceModifier,
+  mapModifier,
   userEvaluations,
   averageEvaluations,
   createHeatmap

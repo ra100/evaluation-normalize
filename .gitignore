@@ -39,3 +39,7 @@ jspm_packages
 
 # VScode
 .vscode
+
+testdata.json
+coverage
+Evaluation.test.js
